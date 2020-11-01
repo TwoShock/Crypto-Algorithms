@@ -5,7 +5,7 @@ from galois import multiply
 import pprint
 import logging
 import numpy as np
-logging.basicConfig(filename = 'aes.log',format='%(message)s', level=logging.INFO)
+logging.basicConfig(filename = './log/aes.log',format='%(message)s', level=logging.INFO)
 class AES():
     def __init__(self):
         self.sbox = [

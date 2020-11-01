@@ -1,5 +1,5 @@
 import logging
-logging.basicConfig(filename = 'euclid.log',format='%(message)s', level=logging.INFO)
+logging.basicConfig(filename = './log/euclid.log',format='%(message)s', level=logging.INFO)
 def extended_euclid(m:int,b:int)->int:
    a1,a2,a3 = (1,0,m) 
    b1,b2,b3 =(0,1,b)
