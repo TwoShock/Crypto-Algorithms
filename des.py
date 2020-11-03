@@ -51,18 +51,23 @@ class DES():
             output.append(bin(self.s_box[box][rowIndex][columnIndex])[2:].zfill(4))
             box += 1
         return ''.join(output).zfill(32)
-    def applyRound(self,plainText,key):
-        plainText = self.applyTable(plainText,'ip')
-        logging.info(f'IP:{plainText}')
-        keys = self.generateKeys(key)
+    def applyRound(self,plainText,key,round):
+        if(round == 0):
+            plainText = self.applyTable(plainText,'ip')
+            logging.info(f'IP:{plainText}')
+
+        key = self.generateNextKey(key,round)
+        
+        keyTemp = self.applyTable(key,'pc2')
+        logging.info(f'PC2(K{round}):{keyTemp}')
+
         left = plainText[:len(plainText)//2]
         right = plainText[len(plainText)//2:]
-        logging.info(f'\nPC2(K):{keys[0]}')
 
         newRight = self.applyTable(right,'e')
         logging.info(f'\nE(R0):{newRight}')
 
-        newRight = stringXOR(newRight,keys[0])
+        newRight = stringXOR(newRight,keyTemp)
         logging.info(f'\nE(R0) xor K = A = :{newRight}')
 
         newRight = self.performSubBox(newRight)
@@ -76,7 +81,30 @@ class DES():
         newLeft = right
         logging.info(f'\nL1R1: {newLeft+newRight}')
         logging.info(f'\nL1R1(HEX): {convertBinaryToHex(newLeft+newRight)}')
-        return newLeft+newRight 
+        if(round == 15):
+            newRight,newLeft = newLeft,newRight
+            final = self.applyTable(newLeft+newRight,'invip')
+            newLeft = final[0:len(final)//2] 
+            newRight = final[len(final)//2:]
+            logging.info(f'Final Result:{newLeft+newRight}')
+            logging.info(f'Final Result:{convertBinaryToHex(newLeft+newRight)}')
+        return newLeft+newRight,key
+    
+    def generateNextKey(self,currentKey,round):
+        logging.info(f'Current Key:{currentKey}')
+        key = currentKey
+        if(round == 0):
+            key = self.applyTable(currentKey,'pc1')
+            logging.info(f'\nPC1(K):{key}')
+
+        left = key[:len(key)//2]
+        right = key[len(key)//2:]
+
+        left = circularLeftShift(left,self.keyShiftSchedule[round]) 
+        right = circularLeftShift(right,self.keyShiftSchedule[round])
+        logging.info(f'\nC{round}: {left}\nD{round}: {right}')
+        return left+right 
+
     def generateKeys(self,key):
         logging.info(f'\nK:{key}')
         key = self.applyTable(key,'pc1')
@@ -99,13 +127,10 @@ class DES():
         return keys 
 
 des = DES()
-
-
-key ='0fff111122223333'
-plainText= 'aaaa111133335555'
-
-assert(len(key) == len(plainText))
-key = convertHexToBinary(key).zfill(64)
-plainText = convertHexToBinary(plainText).zfill(64)
-
-des.applyRound(plainText,key)
+key = convertHexToBinary('0f1571c947d9e859').zfill(64)
+plainText = convertHexToBinary('02468aceeca86420').zfill(64)
+no_rounds = 1 #number of rounds to apply
+for i in range(no_rounds):
+    newP,newK = des.applyRound(plainText,key,i)
+    key = newK
+    plainText = newP

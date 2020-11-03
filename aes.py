@@ -82,7 +82,6 @@ class AES():
                     newState[i][j] = self.invsbox[rowIdx][columnIdx]
                 else:
                     newState[i][j] = self.sbox[rowIdx][columnIdx]
-                
         return newState
     def shiftRows(self,state,inv=False):
         newState = []
@@ -166,12 +165,9 @@ class AES():
         logging.info('After Mix columns')
         self.logMatrix(mix)
         
-        
-
-
 aes = AES()
 key = '10101010101010101010101010101010'
 plainText = '000102030405060708090a0b0c0d0e0f'
-assert(len(key) == 32)
-assert(len(key) == len(plainText))
-aes.encrypt(plainText,key)
+print(len(key))
+print(len(plainText))
+aes.encrypt(key,plainText)
