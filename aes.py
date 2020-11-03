@@ -1,11 +1,11 @@
 from math import sqrt
+import logging
+logging.basicConfig(filename = './log/aes.log',format='%(message)s', level=logging.INFO)
 import math
 from utils import convertBinaryToHex,convertHexToBinary,circularLeftShift,ciruclarRightShift,stringXOR
 from galois import multiply
 import pprint
-import logging
 import numpy as np
-logging.basicConfig(filename = './log/aes.log',format='%(message)s', level=logging.INFO)
 class AES():
     def __init__(self):
         self.sbox = [
@@ -132,6 +132,7 @@ class AES():
                     temp[j] = self.sbox[row][col]
                 temp = self.xorVectors(temp,self.rconVectors[int((i-1)/4)])
             w.append(self.xorVectors(temp,w[i-4]))
+        print(w[:8])
         keys = [w[i:i+4] for i in range(0, len(w), 4)]
         for i,k in enumerate(keys):
             keys[i] = self.transposeMatrix(k)
@@ -140,7 +141,7 @@ class AES():
         for row in matrix: 
             logging.info(row)
         logging.info('\n')
-    def encrypt(self,plainText,key):
+    def encrypt(self,plainText,key,inv=False):
         plainText = self.transformInputToMatrix(plainText)
         logging.info('Plain text:')
         self.logMatrix(plainText)
@@ -153,11 +154,11 @@ class AES():
         logging.info('P xor K:\n')
         self.logMatrix(pxorK)
         
-        sub = self.substituteBytes(pxorK)
+        sub = self.substituteBytes(pxorK,inv)
         logging.info('After Substitution')
         self.logMatrix(sub)
 
-        shift = self.shiftRows(sub)
+        shift = self.shiftRows(sub,inv)
         logging.info('Shift Rows')
         self.logMatrix(shift)
 
@@ -166,8 +167,7 @@ class AES():
         self.logMatrix(mix)
         
 aes = AES()
-key = '10101010101010101010101010101010'
+key = 'aaaaaaaabbbbbbbbccccccccdddddddd'
 plainText = '000102030405060708090a0b0c0d0e0f'
-print(len(key))
-print(len(plainText))
 aes.encrypt(key,plainText)
+aes.keyExpansion(aes.transformInputToMatrix(key))

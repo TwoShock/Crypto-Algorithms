@@ -22,4 +22,4 @@ def gcd(x, y):
        logging.info(f'GCD({x},{y}) = GCD({y},{x%y})')
        x, y = y, x % y 
    return x 
-extended_euclid(40902,27140)
+gcd(24,12)

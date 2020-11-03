@@ -1,3 +1,5 @@
+import logging
+logging.basicConfig(filename = './log/galois.log',format='%(message)s', level=logging.INFO)
 from utils import circularLeftShift,stringXOR
 import functools
 from sympy import gcdex
@@ -7,8 +9,6 @@ import re
 from sympy import Symbol
 from sympy import div
 from sympy import mul
-import logging
-logging.basicConfig(filename = './log/euclid.log',format='%(message)s', level=logging.INFO)
 def multiplyByX(p1):
     if p1[0] == '0':
         return circularLeftShift(p1,1)
@@ -55,9 +55,6 @@ def extended_euclid(m,b):
             return b2
       elif(b3 == Poly(0,x,domain='GF(2)')):
           return None
-'''
-extended euclid example usage
 m = x**8+x**4+x**3+x+1
-b = x**6+x**5+x**2+x+1
+b = x**6+x**2
 extended_euclid(m,b)
-'''
