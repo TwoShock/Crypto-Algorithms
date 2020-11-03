@@ -148,6 +148,7 @@ class AES():
 
         logging.info('Key')
         key = self.transformInputToMatrix(key)
+        keys = self.keyExpansion(key)
         self.logMatrix(key)
         
         pxorK = self.addRoundKey(plainText,key)
@@ -165,9 +166,18 @@ class AES():
         mix = self.mixColumns(shift)
         logging.info('After Mix columns')
         self.logMatrix(mix)
-        
+        print(keys[1])
+        mcolxork = self.addRoundKey(mix,keys[1])
+        logging.info('After Add round key 2')
+        self.logMatrix(mcolxork)
+    def multiplyVectorByMcols(self,vector):
+        keyState = [[vector[0],'00','00','00'],
+                    [vector[1],'00','00','00'],
+                    [vector[2],'00','00','00'],
+                    [vector[3],'00','00','00']]
+        return [row[0] for row in self.mixColumns(keyState)]
 aes = AES()
-key = 'aaaaaaaabbbbbbbbccccccccdddddddd'
-plainText = '000102030405060708090a0b0c0d0e0f'
-aes.encrypt(key,plainText)
-aes.keyExpansion(aes.transformInputToMatrix(key))
+key = '5468617473206D79204B756E67204675'
+plainText = '54776F204F6E65204E696E652054776F'
+
+aes.encrypt(plainText,key)
