@@ -100,12 +100,12 @@ class DES():
 
 des = DES()
 
+
 key ='0fff111122223333'
 plainText= 'aaaa111133335555'
 
 assert(len(key) == len(plainText))
-
 key = convertHexToBinary(key).zfill(64)
 plainText = convertHexToBinary(plainText).zfill(64)
 
-des.applyRound(key,plainText)
+des.applyRound(plainText,key)
